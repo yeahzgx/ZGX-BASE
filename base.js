@@ -79,11 +79,12 @@
 //
 ////import { querystring } from 'vux' vux带的链接参数读取
 ////获取url里的参数：name为参数名
-function getUrlString(name){
-    //当路由非history模式时,有#号，#后面为锚点，?就无效了，Location的search和pathname都是错误的不可用
-    let reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-    let r = window.location.href.split("?")[1].match(reg);
-    if(r!=null)return  unescape(r[2]); return null;
+function getUrlString(name) {
+	//当路由非history模式时,有#号，#后面为锚点，?就无效了，Location的search和pathname都是错误的不可用
+	let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+	let r = window.location.href.split("?")[1].match(reg);
+	if (r != null) return unescape(r[2]);
+	return null;
 }
 //
 //
@@ -94,136 +95,217 @@ function getUrlString(name){
 //}
 //
 //
-/** 分转换为元，有小数时保留小数 **/   
-function yuan(x){
-    x=x*1;
-    var yuan;
-    if(x%100){
-        yuan=toDecimal2(x/100);
-    }else{
-        yuan=x/100;
-    }
-    return yuan;
+/** 分转换为元，有小数时保留小数 **/
+function yuan(x) {
+	x = x * 1;
+	var yuan;
+	if (x % 100) {
+		yuan = toDecimal2(x / 100);
+	} else {
+		yuan = x / 100;
+	}
+	return yuan;
 }
-/**制保留2位小数，如：2，会在2后面补上00.即2.00   主要是显示金钱用 **/      
-function toDecimal2(x) {              
-    var f = parseFloat(x);              
-    if (isNaN(f)) {   
-        return false;              
-    }              
-    var f = Math.round(x*100)/100;                  
-    var s = f.toString();              
-    var rs = s.indexOf('.');              
-    if (rs < 0) {   
-        rs = s.length;                  
-        s += '.';   
-    }              
-    while (s.length <= rs + 2) {   
-        s += '0';              
-    }              
-    return s;
+/**制保留2位小数，如：2，会在2后面补上00.即2.00   主要是显示金钱用 **/
+function toDecimal2(x) {
+	var f = parseFloat(x);
+	if (isNaN(f)) {
+		return false;
+	}
+	var f = Math.round(x * 100) / 100;
+	var s = f.toString();
+	var rs = s.indexOf('.');
+	if (rs < 0) {
+		rs = s.length;
+		s += '.';
+	}
+	while (s.length <= rs + 2) {
+		s += '0';
+	}
+	return s;
 }
 
-//小数计算精度解决
-//加法
-function accAdd(arg1,arg2){
-    var r1,r2,m;
-    try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0}
-    try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0}
-    m=Math.pow(10,Math.max(r1,r2))
-    return (Math.round(arg1*m)+Math.round(arg2*m))/m
+
+//小数计算精度处理:
+//js由于数字类型变量长度限制会产生小数计算精度错误，这里小数计算时通过字符串化解决该问题
+// 加法
+function accAdd(arg1, arg2) {
+	var r1, r2, m;
+	try {
+		r1 = arg1.toString().split(".")[1].length
+	} catch (e) {
+		r1 = 0
+	}
+	try {
+		r2 = arg2.toString().split(".")[1].length
+	} catch (e) {
+		r2 = 0
+	}
+	m = Math.pow(10, Math.max(r1, r2))
+	return (Math.round(arg1 * m) + Math.round(arg2 * m)) / m
 }
 //减法
-function accSub(arg1,arg2){
-    var r1,r2,m,n;
-    try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0}
-    try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0}
-    m=Math.pow(10,Math.max(r1,r2));
-    n=(r1>=r2)?r1:r2;
-    return ((arg1*m-arg2*m)/m).toFixed(n);
+function accSub(arg1, arg2) {
+	var r1, r2, m, n;
+	try {
+		r1 = arg1.toString().split(".")[1].length
+	} catch (e) {
+		r1 = 0
+	}
+	try {
+		r2 = arg2.toString().split(".")[1].length
+	} catch (e) {
+		r2 = 0
+	}
+	m = Math.pow(10, Math.max(r1, r2));
+	n = (r1 >= r2) ? r1 : r2;
+	return ((arg1 * m - arg2 * m) / m).toFixed(n);
 }
 //乘法
-function accMul(arg1,arg2)
-{
-    var m=0,s1=arg1.toString(),s2=arg2.toString();
-    try{m+=s1.split(".")[1].length}catch(e){}
-    try{m+=s2.split(".")[1].length}catch(e){}
-    return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)
+function accMul(arg1, arg2) {
+	var m = 0,
+		s1 = arg1.toString(),
+		s2 = arg2.toString();
+	try {
+		m += s1.split(".")[1].length
+	} catch (e) {}
+	try {
+		m += s2.split(".")[1].length
+	} catch (e) {}
+	return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
 }
 //除法
-function accDiv(arg1,arg2){
-    var t1=0,t2=0,r1,r2;
-    try{t1=arg1.toString().split(".")[1].length}catch(e){}
-    try{t2=arg2.toString().split(".")[1].length}catch(e){}
-    r1=Number(arg1.toString().replace(".",""))
-    r2=Number(arg2.toString().replace(".",""))
-    return accMul((r1/r2),pow(10,t2-t1));
+function accDiv(arg1, arg2) {
+	var t1 = 0,
+		t2 = 0,
+		r1, r2;
+	try {
+		t1 = arg1.toString().split(".")[1].length
+	} catch (e) {}
+	try {
+		t2 = arg2.toString().split(".")[1].length
+	} catch (e) {}
+	r1 = Number(arg1.toString().replace(".", ""))
+	r2 = Number(arg2.toString().replace(".", ""))
+	return accMul((r1 / r2), pow(10, t2 - t1));
 }
 
 
-/** 正整数判断 原check_Pmath函数  **/  
-function integer(d){
-    let isPmath = /^((\d+))$/;
-    if(!isPmath.test(d)){
-        return false;
-    }else{
-        return true;    
-    }
+//防抖与节流
+//防抖与节流函数是高频触发优化方式，常用于滚动条事件，但是控制了“状态更新”的频率，而不是控制高耗时任务本身
+//vue框架1.0中事件触发自带防抖与节流，但2.0就去除了，所以不可滥用，要根据实际情况使用
+// 防抖 (debounce):
+// 原理：将多次高频操作优化为只在最后一次执行
+// 通常使用的场景是：用户输入，只需再输入完成后做一次输入校验即可。
+function debounce(fn, wait, immediate) {
+	let timer = null
+
+	return function() {
+		let args = arguments
+		let context = this
+
+		if (immediate && !timer) {
+			fn.apply(context, args)
+		}
+
+		if (timer) clearTimeout(timer)
+		timer = setTimeout(() => {
+			fn.apply(context, args)
+		}, wait)
+	}
 }
 
-/** 手机号打码  **/  
-function mfphone(phone){
-    if(phone.length==11){
-        let m = phone.slice(0,3) + '****' + phone.slice(7,phone.length);
-        return m
-    }else{
-        return phone
-    }
+// 节流(throttle): 
+// 原理：每隔一段时间后执行一次，也就是降低频率，将高频操作优化成低频操作
+// 通常使用场景: 滚动条事件 或者 resize 事件，通常每隔 100~500 ms执行一次即可。
+function throttle(fn, wait, immediate) {
+	let timer = null
+	let callNow = immediate
+
+	return function() {
+		let context = this,
+			args = arguments
+
+		if (callNow) {
+			fn.apply(context, args)
+			callNow = false
+		}
+
+		if (!timer) {
+			timer = setTimeout(() => {
+				fn.apply(context, args)
+				timer = null
+			}, wait)
+		}
+	}
 }
+
+/** 正整数判断 原check_Pmath函数  **/
+function integer(d) {
+	let isPmath = /^((\d+))$/;
+	if (!isPmath.test(d)) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+/** 手机号打码  **/
+function mfphone(phone) {
+	if (phone.length == 11) {
+		let m = phone.slice(0, 3) + '****' + phone.slice(7, phone.length);
+		return m
+	} else {
+		return phone
+	}
+}
+
+
 
 //  插件方式导出，方便全局使用
-exports.install = function (Vue, options) {
-//  //导出常用参数
-//  Vue.prototype.isAndroid = isAndroid;
-//  Vue.prototype.isIOS = isIOS;
-//  Vue.prototype.isApp = isApp;
+// 	原理：Vue 为构造函数，通过prototype属性指向原型，在原型上添加公共方法，使得Vue生成的所有实例都可使用该方法
+exports.install = function(Vue, options) {
+	//  //导出常用参数
+	//  Vue.prototype.isAndroid = isAndroid;
+	//  Vue.prototype.isIOS = isIOS;
+	//  Vue.prototype.isApp = isApp;
 
-    //循环函数存放变量，每次切换页面会清除其下的时间循环函数，因为为单页面应用，setInterval不清除会一直存在，这里利用路由统一清除
-    Vue.prototype.interval = [];
+	//循环函数存放变量，每次切换页面会清除其下的时间循环函数，因为为单页面应用，setInterval不清除会一直存在，这里利用路由统一清除
+	Vue.prototype.interval = [];
 
-    //导出常方法
-    Vue.prototype.yuan = yuan;
-    Vue.prototype.toDecimal2 = toDecimal2;
-    Vue.prototype.accAdd = accAdd;
-    Vue.prototype.accSub = accSub;
-    Vue.prototype.accMul = accMul;
-    Vue.prototype.accDiv = accDiv;
-    Vue.prototype.getUrlString = getUrlString;
-    Vue.prototype.integer = integer;
-    Vue.prototype.mfphone = mfphone;
-    
-    /*  插件开发说明
-    // 1. 添加全局方法或属性
-    Vue.myGlobalMethod = function () {
-    // 逻辑...
-    }
-    // 2. 添加全局资源
-    Vue.directive('my-directive', {
-        bind (el, binding, vnode, oldVnode) {
-            // 逻辑...
-        }
-        ...
-    })
-    // 3. 注入组件
-    Vue.mixin({
-        created: function () {
-        // 逻辑...
-        }
-        ...
-    })
-    // 4. 添加实例方法
-    Vue.prototype.$myMethod = function (methodOptions) {
-        // 逻辑...
-    }
-    */
+	//导出常方法
+	Vue.prototype.yuan = yuan;
+	Vue.prototype.toDecimal2 = toDecimal2;
+	Vue.prototype.accAdd = accAdd;
+	Vue.prototype.accSub = accSub;
+	Vue.prototype.accMul = accMul;
+	Vue.prototype.accDiv = accDiv;
+	Vue.prototype.getUrlString = getUrlString;
+	Vue.prototype.integer = integer;
+	Vue.prototype.mfphone = mfphone;
+
+	/*  插件开发说明
+	// 1. 添加全局方法或属性
+	Vue.myGlobalMethod = function () {
+	// 逻辑...
+	}
+	// 2. 添加全局资源
+	Vue.directive('my-directive', {
+	    bind (el, binding, vnode, oldVnode) {
+	        // 逻辑...
+	    }
+	    ...
+	})
+	// 3. 注入组件
+	Vue.mixin({
+	    created: function () {
+	    // 逻辑...
+	    }
+	    ...
+	})
+	// 4. 添加实例方法
+	Vue.prototype.$myMethod = function (methodOptions) {
+	    // 逻辑...
+	}
+	*/
 };
