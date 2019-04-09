@@ -260,6 +260,31 @@ function mfphone(phone) {
 	}
 }
 
+// 文件处理系列：
+// 将base64转换为File文件对象，即<input type="file">产生的对象
+function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n); // ES2017 最新语法,数组类型表示一个8位无符号整型数组
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
+}
+// 将base64转换为2进制Blob文件对象，由于File文件对象基于Blob，所以Ajax提交时可以直接提交Blob，抓包会显示为File
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {type:mime});
+}
+// 将File或Blob转换为base64 (File对象也是一个Blob对象，二者的处理相同)
+function readBlobAsDataURL(blob, callback) {
+    var a = new FileReader();
+    a.onload = function(e) {callback(e.target.result);};
+    a.readAsDataURL(blob);
+}
 
 
 //  插件方式导出，方便全局使用
