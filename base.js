@@ -77,14 +77,26 @@
 //  return y+"-"+m+"-"+d;
 //}
 //
-////import { querystring } from 'vux' vux带的链接参数读取
-////获取url里的参数：name为参数名
-function getUrlString(name) {
-	//当路由非history模式时,有#号，#后面为锚点，?就无效了，Location的search和pathname都是错误的不可用
-	let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-	let r = window.location.href.split("?")[1].match(reg);
-	if (r != null) return unescape(r[2]);
-	return null;
+//import { querystring } from 'vux' vux带的链接参数读取
+//获取url里的参数：name为参数名
+function getUrlString(name,url){
+    //当路由非history模式时,有#号，#后面为锚点，?就无效了，Location的search和pathname都是错误的不可用
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    if(url){
+        var r = url.split("?");
+    }else{
+        var r = window.location.href.split("?");
+    }
+	if(r.length>1){
+		r = r[r.length - 1].match(reg);		//多?时取最后的?
+		if(r!=null){
+			return  unescape(r[2])
+		}else{
+			return null;
+		}
+	}else{
+		return null;
+	}
 }
 //
 //
@@ -306,8 +318,13 @@ exports.install = function(Vue, options) {
 	Vue.prototype.accMul = accMul;
 	Vue.prototype.accDiv = accDiv;
 	Vue.prototype.getUrlString = getUrlString;
+	Vue.prototype.debounce = debounce;
+	Vue.prototype.throttle = throttle;
 	Vue.prototype.integer = integer;
 	Vue.prototype.mfphone = mfphone;
+	Vue.prototype.dataURLtoFile = dataURLtoFile;
+	Vue.prototype.dataURLtoBlob = dataURLtoBlob;
+	Vue.prototype.readBlobAsDataURL = readBlobAsDataURL;
 
 	/*  插件开发说明
 	// 1. 添加全局方法或属性
