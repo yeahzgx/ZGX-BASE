@@ -264,7 +264,7 @@ function integer(d) {
 
 /** 手机号打码  **/
 function mfphone(phone) {
-	if (phone.length == 11) {
+	if (phone && phone.length == 11) {
 		let m = phone.slice(0, 3) + '****' + phone.slice(7, phone.length);
 		return m
 	} else {
