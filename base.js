@@ -7,7 +7,9 @@
 //var isApp = u.indexOf("app/Android-HFW")>-1 || u.indexOf("app/IOS-HFW")>-1;
 ////是否微信浏览器判断
 //const isWX = u.indexOf('MicroMessenger') > -1;
-
+// const isWechat = /micromessenger/i.test(u);
+// const isWeibo = /weibo/i.test(u);
+// const isQQ = /qq\//i.test(u);
 
 ////校验
 ////是否为空校验
@@ -63,6 +65,27 @@
 //  }
 //}
 //
+
+// // 校验8-16位数字和字母密码
+// function check_Pwd(val){
+//   let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+//   if(reg.test(val)){
+//     return true;   
+//   }else{
+//     return false;
+//   }
+// }
+
+// // 校验中文
+// function check_Zh(val){
+//   let reg = /^[\u4e00-\u9fa5]*$/;
+//   if(reg.test(val)){
+//     return true;   
+//   }else{
+//     return false;
+//   }
+// }
+
 ///**
 // * 根据时间戳获取年、月、日
 // * @param String str 时间戳
@@ -76,7 +99,25 @@
 //  var d = setNum(d.getDate());
 //  return y+"-"+m+"-"+d;
 //}
-//
+
+// // 倒计时时间格式化
+// function format_time(timeStamp) {
+//     let day = Math.floor(timeStamp / (24 * 3600 * 1000));
+//     let leave1 = timeStamp % (24 * 3600 * 1000);
+//     let hours = Math.floor(leave1 / (3600 * 1000));
+//     let leave2 = leave1 % (3600 * 1000);
+//     let minutes = Math.floor(leave2 / (60 * 1000));
+//     let leave3 = leave2 % (60 * 1000);
+//     let seconds = Math.floor(leave3 / 1000);
+//     if (day) return day + "天" + hours + "小时" + minutes + "分";
+//     if (hours) return hours + "小时" + minutes + "分" + seconds + "秒";
+//     if (minutes) return minutes + "分" + seconds + "秒";
+//     if (seconds) return seconds + "秒";
+//     return "时间到！";
+// }
+
+
+
 //import { querystring } from 'vux' vux带的链接参数读取
 //获取url里的参数：name为参数名
 function getUrlString(name,url){
