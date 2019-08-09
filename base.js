@@ -148,6 +148,27 @@ function getUrlString(name,url){
 //}
 //
 //
+
+// 数组去重（unique:唯一）
+function unique(array) {
+  // ES6方法：Set数据结构的成员具有唯一性，加上...的解构功能
+  return [...new Set(array)];
+//   
+//   // 非ES6方法：利用对象的属性不会重复这一特性，校验数组元素是否重复
+//   let result = []
+//   let obj = {}
+// 
+//   for (let i=0; i<array.length; i++) {
+//       if (!obj[i]) {
+//           result.push(i)
+//           obj[i] = 1
+//       }
+//   }
+// 
+//   return result
+}
+
+
 /** 分转换为元，有小数时保留小数 **/
 function yuan(x) {
 	x = x * 1;
@@ -352,6 +373,7 @@ exports.install = function(Vue, options) {
 	Vue.prototype.interval = [];
 
 	//导出常方法
+  Vue.prototype.unique = unique;
 	Vue.prototype.yuan = yuan;
 	Vue.prototype.toDecimal2 = toDecimal2;
 	Vue.prototype.accAdd = accAdd;
