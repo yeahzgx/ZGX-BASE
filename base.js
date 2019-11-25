@@ -116,6 +116,22 @@
 //     return "时间到！";
 // }
 
+// 时间对象格式化输出： date是时间对象
+function formatTime(date){
+  let year = date.getFullYear()
+  let month = date.getMonth() + 1
+  let day = date.getDate()
+  let hour = date.getHours()
+  let minute = date.getMinutes()
+  let second = date.getSeconds()
+
+  return [year, month, day].map(formatNumber).join('-') + ' ' + [hour, minute, second].map(formatNumber).join(':')
+}
+// 小于10的前面补0
+function formatNumber(n){
+  n = n.toString()
+  return n[1] ? n : '0' + n
+}
 
 
 //import { querystring } from 'vux' vux带的链接参数读取
@@ -149,11 +165,19 @@ function getUrlString(name,url){
 //
 //
 
-// 数组去重（unique:唯一）
+// 判断是否为数组
+function isArray(){
+  if(Object.prototype.toString.apply(list) === '[object Array]'){
+    return true
+  }else{
+    return false
+  }
+}
+
+// 数组高性能去重（unique:唯一）
 function unique(array) {
   // ES6方法：Set数据结构的成员具有唯一性，加上...的解构功能
   return [...new Set(array)];
-//   
 //   // 非ES6方法：利用对象的属性不会重复这一特性，校验数组元素是否重复
 //   let result = []
 //   let obj = {}
@@ -261,7 +285,7 @@ function accDiv(arg1, arg2) {
 	} catch (e) {}
 	r1 = Number(arg1.toString().replace(".", ""))
 	r2 = Number(arg2.toString().replace(".", ""))
-	return accMul((r1 / r2), pow(10, t2 - t1));
+	return accMul((r1 / r2), Math.pow(10, t2 - t1));
 }
 
 
@@ -381,6 +405,7 @@ exports.install = function(Vue, options) {
 	Vue.prototype.accMul = accMul;
 	Vue.prototype.accDiv = accDiv;
 	Vue.prototype.getUrlString = getUrlString;
+  Vue.prototype.formatTime = formatTime;
 	Vue.prototype.debounce = debounce;
 	Vue.prototype.throttle = throttle;
 	Vue.prototype.integer = integer;
