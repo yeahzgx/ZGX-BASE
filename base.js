@@ -1,8 +1,8 @@
 //基础公共方法作为插件导入
 //// IOS Android判断 是否为慧服务App中打开判断
-//let u = navigator.userAgent;
-//const isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
-//const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+let u = navigator.userAgent;
+const isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
 ////APP打开判断
 //var isApp = u.indexOf("app/Android-HFW")>-1 || u.indexOf("app/IOS-HFW")>-1;
 ////是否微信浏览器判断
@@ -35,7 +35,7 @@
 //          return false;
 //      }
 //  }else{
-//      return true;    
+//      return true;
 //  }
 //}
 ////座机号码加-
@@ -57,9 +57,9 @@
 //
 ////邮箱校验
 //export function check_Eamil(d){
-//  var isEamil=/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/; 
+//  var isEamil=/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
 //  if(!isEamil.test(d)){
-//      return false;   
+//      return false;
 //  }else{
 //      return true;
 //  }
@@ -70,7 +70,7 @@
 // function check_Pwd(val){
 //   let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
 //   if(reg.test(val)){
-//     return true;   
+//     return true;
 //   }else{
 //     return false;
 //   }
@@ -80,10 +80,22 @@
 // function check_Zh(val){
 //   let reg = /^[\u4e00-\u9fa5]*$/;
 //   if(reg.test(val)){
-//     return true;   
+//     return true;
 //   }else{
 //     return false;
 //   }
+// }
+
+// //  搜索抓取电话
+// function matchPhone(str){
+//   let reg = /(1[\d]{10}|0[\d]{2,3}-[\d]{5,8}|400[-]?[\d]{3}[-]?[\d]{4})/g; // 对应手机,一杠座机,两杠座机
+//   return str.match(reg)   // match返回的是数组,里面是多个结果;当没有匹配项时返回null,可以使用null来判断是否有电话
+// }
+
+// //  搜索抓取url
+// function matchUrl(str){
+//   let reg = /((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])/g;
+//   return str.match(reg)   // match返回的是数组,里面是多个结果;当没有匹配项时返回null,可以使用null来判断是否有电话
 // }
 
 ///**
@@ -116,6 +128,11 @@
 //     return "时间到！";
 // }
 
+// 字符串日期转时间戳
+function strOutTime(str){
+
+}
+
 // 时间对象格式化输出： date是时间对象
 function formatTime(date){
   let year = date.getFullYear()
@@ -128,9 +145,46 @@ function formatTime(date){
   return [year, month, day].map(formatNumber).join('-') + ' ' + [hour, minute, second].map(formatNumber).join(':')
 }
 // 小于10的前面补0
-function formatNumber(n){
+function formatNumber(n, leng=2){
   n = n.toString()
-  return n[1] ? n : '0' + n
+  leng = leng < 2 ? 2 : leng
+  for (let i = 1; i < leng; i++){
+    n = n[i] ? n : '0' + n
+  }
+  return n
+}
+
+
+
+/** 手机号打码  **/
+function mfphone(phone) {
+	if (phone && phone.length == 11) {
+		let m = phone.slice(0, 3) + '****' + phone.slice(7, phone.length);
+		return m
+	} else {
+		return phone
+	}
+}
+
+/**
+ * 检测字符串存储长度，提交数据到后台要控制存储长度时使用
+ * @param {string} str 要检测长度的字符串
+ */
+function countStrleng(str) {
+  let leng = 0
+  let unicode = 0
+  for (let i of str) {
+    unicode = str.codePointAt(i)
+    if(unicode<=255){   // 1个字节 1Byte 8bit 16进制表示0~FF
+      leng++
+    }else if(unicode<=65535){   // 2个字节
+      leng += 2
+    }else{
+      leng += 3
+    }
+    console.log(i);
+  }
+  return leng
 }
 
 
@@ -157,41 +211,47 @@ function getUrlString(name,url){
 }
 //
 //
-//
 //export function onImgUrl(url){
 //  url = url?url:"http://img.zrhsh.cn/phone/img/noImg.png";
 //  return url
 //}
 //
-//
 
 // 判断是否为数组
-function isArray(){
-  if(Object.prototype.toString.apply(list) === '[object Array]'){
-    return true
-  }else{
-    return false
-  }
+function isArray(input){
+  return input instanceof Array || Object.prototype.toString.call(input) === '[object Array]';
+}
+// 判断是否为数字
+function isNumber(input){
+  return input instanceof Number || Object.prototype.toString.call(input) === '[object Number]';
 }
 
 // 数组高性能去重（unique:唯一）
 function unique(array) {
   // ES6方法：Set数据结构的成员具有唯一性，加上...的解构功能
   return [...new Set(array)];
-//   // 非ES6方法：利用对象的属性不会重复这一特性，校验数组元素是否重复
+  // 非ES6方法：利用对象的属性不会重复这一特性，校验数组元素是否重复
 //   let result = []
 //   let obj = {}
-// 
+//
 //   for (let i=0; i<array.length; i++) {
 //       if (!obj[i]) {
 //           result.push(i)
 //           obj[i] = 1
 //       }
 //   }
-// 
 //   return result
 }
 
+/** 正整数判断 原check_Pmath函数  **/
+function integer(d) {
+	let isPmath = /^((\d+))$/;
+	if (!isPmath.test(d)) {
+		return false;
+	} else {
+		return true;
+	}
+}
 
 /** 分转换为元，有小数时保留小数 **/
 function yuan(x) {
@@ -295,7 +355,8 @@ function accDiv(arg1, arg2) {
 // 防抖 (debounce):
 // 原理：将多次高频操作优化为只在最后一次执行
 // 通常使用的场景是：用户输入，只需再输入完成后做一次输入校验即可。
-function debounce(fn, wait, immediate) {
+// immediate: 第一次是否立刻执行
+function debounce(fn, wait = 100, immediate) {
 	let timer = null
 
 	return function() {
@@ -313,10 +374,10 @@ function debounce(fn, wait, immediate) {
 	}
 }
 
-// 节流(throttle): 
+// 节流(throttle):
 // 原理：每隔一段时间后执行一次，也就是降低频率，将高频操作优化成低频操作
 // 通常使用场景: 滚动条事件 或者 resize 事件，通常每隔 100~500 ms执行一次即可。
-function throttle(fn, wait, immediate) {
+function throttle(fn, wait = 100, immediate) {
 	let timer = null
 	let callNow = immediate
 
@@ -335,26 +396,6 @@ function throttle(fn, wait, immediate) {
 				timer = null
 			}, wait)
 		}
-	}
-}
-
-/** 正整数判断 原check_Pmath函数  **/
-function integer(d) {
-	let isPmath = /^((\d+))$/;
-	if (!isPmath.test(d)) {
-		return false;
-	} else {
-		return true;
-	}
-}
-
-/** 手机号打码  **/
-function mfphone(phone) {
-	if (phone && phone.length == 11) {
-		let m = phone.slice(0, 3) + '****' + phone.slice(7, phone.length);
-		return m
-	} else {
-		return phone
 	}
 }
 
@@ -387,7 +428,7 @@ function readBlobAsDataURL(blob, callback) {
 
 //  插件方式导出，方便全局使用
 // 	原理：Vue 为构造函数，通过prototype属性指向原型，在原型上添加公共方法，使得Vue生成的所有实例都可使用该方法
-exports.install = function(Vue, options) {
+const base.install = function(Vue, options) {
 	//  //导出常用参数
 	//  Vue.prototype.isAndroid = isAndroid;
 	//  Vue.prototype.isIOS = isIOS;
@@ -397,6 +438,8 @@ exports.install = function(Vue, options) {
 	Vue.prototype.interval = [];
 
 	//导出常方法
+  Vue.prototype.isArray = isArray;
+  Vue.prototype.isNumber = isNumber;
   Vue.prototype.unique = unique;
 	Vue.prototype.yuan = yuan;
 	Vue.prototype.toDecimal2 = toDecimal2;
@@ -404,8 +447,10 @@ exports.install = function(Vue, options) {
 	Vue.prototype.accSub = accSub;
 	Vue.prototype.accMul = accMul;
 	Vue.prototype.accDiv = accDiv;
+  Vue.prototype.countStrleng = countStrleng;
 	Vue.prototype.getUrlString = getUrlString;
   Vue.prototype.formatTime = formatTime;
+  Vue.prototype.formatNumber = formatNumber;
 	Vue.prototype.debounce = debounce;
 	Vue.prototype.throttle = throttle;
 	Vue.prototype.integer = integer;
@@ -438,4 +483,5 @@ exports.install = function(Vue, options) {
 	    // 逻辑...
 	}
 	*/
-};
+}
+export default base
