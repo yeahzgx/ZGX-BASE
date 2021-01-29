@@ -179,10 +179,11 @@ function countStrleng(str) {
       leng++
     }else if(unicode<=65535){   // 2个字节
       leng += 2
-    }else{
+    }else if(unicode<=16777215){
       leng += 3
+    }else{
+      leng += 4
     }
-    console.log(i);
   }
   return leng
 }
